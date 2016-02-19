@@ -44,9 +44,12 @@ public class LogAnalyzer
     public void printHourlyCounts()
     {
         System.out.println("Hr: Count");
-        for(int hour = 0; hour < hourCounts.length; hour++) {
-            System.out.println(hour + ": " + hourCounts[hour]);
+        int index = 0;
+        while (hourCounts.length > index) {
+            System.out.println(index + ": " + hourCounts[index]);
+            index++;            
         }
+       
     }
     
     /**
