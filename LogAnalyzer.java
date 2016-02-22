@@ -1,3 +1,4 @@
+import java.util.*;
 /**
  * Read web server data and analyse
  * hourly access patterns.
@@ -11,6 +12,8 @@ public class LogAnalyzer
     private int[] hourCounts;
     // Use a LogfileReader to access the data.
     private LogfileReader reader;
+    
+    private LogfileCreator nuevoArchivo;
 
     /**
      * Create an object to analyze hourly web accesses.
@@ -22,6 +25,16 @@ public class LogAnalyzer
         hourCounts = new int[24];
         // Create the reader to obtain the data.
         reader = new LogfileReader();
+    }
+    
+      /**
+     * Create an object to analyze hourly web accesses.
+     */
+    public LogAnalyzer(String nombreNuevoLog)
+    { 
+        hourCounts = new int[24];
+        reader = new LogfileReader(nombreNuevoLog);
+     
     }
 
     /**
