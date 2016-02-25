@@ -12,8 +12,10 @@ public class LogAnalyzer
     private int[] hourCounts;
     // Use a LogfileReader to access the data.
     private LogfileReader reader;
-    
+
     private LogfileCreator nuevoArchivo;
+
+    private boolean conAccesos;
 
     /**
      * Create an object to analyze hourly web accesses.
@@ -26,15 +28,15 @@ public class LogAnalyzer
         // Create the reader to obtain the data.
         reader = new LogfileReader();
     }
-    
-      /**
+
+    /**
      * Create an object to analyze hourly web accesses.
      */
     public LogAnalyzer(String nombreNuevoLog)
     { 
         hourCounts = new int[24];
         reader = new LogfileReader(nombreNuevoLog);
-     
+
     }
 
     /**
@@ -47,6 +49,42 @@ public class LogAnalyzer
             int hour = entry.getHour();
             hourCounts[hour]++;
         }
+
+    }
+
+    public int numberOfAccesses()
+    {
+        int numeroDeAccesos = 0;
+        int index = 0;
+        while(index < hourCounts.length)
+        {
+            numeroDeAccesos =numeroDeAccesos + hourCounts[index];
+            index++;
+        }
+        return numeroDeAccesos;
+    }
+
+    /**
+     *
+     */
+    public int busiestHour()
+    {
+        int mayorNumero = -1;
+        int  mayorNumeroDePeticiones = 0;
+        for (int index = 0; index < hourCounts.length; index++) {
+
+            if (hourCounts[index] >= mayorNumeroDePeticiones  ){
+                mayorNumero = index;
+                mayorNumeroDePeticiones = hourCounts[index];
+            } 
+
+        }
+        if (mayorNumeroDePeticiones == 0) {
+            mayorNumero = -1;
+            System.out.println("No hay accesos");
+        }
+     
+        return mayorNumero;
     }
 
     /**
@@ -62,9 +100,9 @@ public class LogAnalyzer
             System.out.println(index + ": " + hourCounts[index]);
             index++;            
         }
-       
+
     }
-    
+
     /**
      * Print the lines of data read by the LogfileReader
      */
