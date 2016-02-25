@@ -83,7 +83,7 @@ public class LogAnalyzer
             mayorNumero = -1;
             System.out.println("No hay accesos");
         }
-     
+
         return mayorNumero;
     }
 
@@ -110,24 +110,45 @@ public class LogAnalyzer
     {
         reader.printData();
     }
-    
+
     /**
      * Metodo que devuelve la hora que menos gente tiene el server
      * si no se analiza se devuelve -1
      */
     public int quietestHour()
     {
-        int horaConMenosPeticiones = -1;
-        int index = 0;
-       
-        while(index < hourCounts.length)
-        {
-            if (hourCounts[index] < hourCounts[ horaConMenosPeticiones + 1])
+        int horaConMenosPeticiones = 0;
+
+        for (int index = 0; index < hourCounts.length; index++) {
             {
-                 horaConMenosPeticiones = (index);
+                if (hourCounts[index] < hourCounts[ horaConMenosPeticiones])
+                {
+                    horaConMenosPeticiones = (index);
+                }            
             }
-            index++;
+        }
+        if (horaConMenosPeticiones == 0) {
+            horaConMenosPeticiones = -1;
+            System.out.println("No hay accesos");
         }
         return  horaConMenosPeticiones;
+    }
+
+    /**
+     * Analyze the successfully hourly access data from the log file.
+     */
+    public void analyzeSuccessHourlyData()
+    {
+        // Iteramos sobre el log
+        while(reader.hasNext()) 
+        {
+            LogEntry entry = reader.next();
+            // Si en el campo success tenemos 200, sumamos uno, sino no
+            if (entry.getAccess() == 200)
+            {
+                int hour = entry.getHour();
+                hourSuccessCounts[hour]++;
+            }
+        }
     }
 }
