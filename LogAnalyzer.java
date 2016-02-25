@@ -110,4 +110,24 @@ public class LogAnalyzer
     {
         reader.printData();
     }
+    
+    /**
+     * Metodo que devuelve la hora que menos gente tiene el server
+     * si no se analiza se devuelve -1
+     */
+    public int quietestHour()
+    {
+        int horaConMenosPeticiones = -1;
+        int index = 0;
+       
+        while(index < hourCounts.length)
+        {
+            if (hourCounts[index] < hourCounts[ horaConMenosPeticiones + 1])
+            {
+                 horaConMenosPeticiones = (index);
+            }
+            index++;
+        }
+        return  horaConMenosPeticiones;
+    }
 }
