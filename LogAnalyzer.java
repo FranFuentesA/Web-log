@@ -17,6 +17,8 @@ public class LogAnalyzer
 
     private boolean conAccesos;
 
+    private int[] dayCounts;
+
     /**
      * Create an object to analyze hourly web accesses.
      */
@@ -25,6 +27,8 @@ public class LogAnalyzer
         // Create the array object to hold the hourly
         // access counts.
         hourCounts = new int[24];
+
+        dayCounts = new int[31] ;
         // Create the reader to obtain the data.
         reader = new LogfileReader();
     }
@@ -36,6 +40,7 @@ public class LogAnalyzer
     { 
         hourCounts = new int[24];
         reader = new LogfileReader(nombreNuevoLog);
+        dayCounts = new int[31] ;
 
     }
 
@@ -87,6 +92,26 @@ public class LogAnalyzer
         return mayorNumero;
     }
 
+    public int busiestTwoHour()
+    {
+        int horaInicialPeriodoConMasPeticiones = -1;
+        int mayorNumeroDePeticiones = 0;
+
+        for(int hora = 0; hora < hourCounts.length; hora++) {
+            int sumaDePeticionesDeDosHoras = hourCounts[hora] + hourCounts[(hora + 1) % 24];
+            if (mayorNumeroDePeticiones <= sumaDePeticionesDeDosHoras) {
+                mayorNumeroDePeticiones = sumaDePeticionesDeDosHoras;
+                horaInicialPeriodoConMasPeticiones = hora;
+            }
+        }
+
+        if (horaInicialPeriodoConMasPeticiones == -1) {
+            System.out.println("No ha habido accesos");
+        }
+
+        return horaInicialPeriodoConMasPeticiones;      
+    }      
+
     /**
      * Print the hourly counts.
      * These should have been set with a prior
@@ -117,38 +142,72 @@ public class LogAnalyzer
      */
     public int quietestHour()
     {
+        //Guardamos la hoa con menor numero de peticiones
         int horaConMenosPeticiones = 0;
+        //Guardamos aqui el menor numero de peticiones hasta el momento
+        int menorNumeroDePeticiones = hourCounts[0];
 
-        for (int index = 0; index < hourCounts.length; index++) {
-            {
-                if (hourCounts[index] < hourCounts[ horaConMenosPeticiones])
-                {
-                    horaConMenosPeticiones = (index);
-                }            
+        if (numberOfAccesses() == 0) {
+            horaConMenosPeticiones = -1;
+            System.out.println("No ha habido accesos");
+        }
+        else {
+            //Recorro el array donde estan guardados los accesos por hora
+            for(int hora = 1; hora < hourCounts.length; hora++) {
+                //Por cada elemento, si el numero de peticiones de esa hora es menor
+                //que el menor numero de peticiones que tenemos registrado...
+                if (menorNumeroDePeticiones >= hourCounts[hora]) {
+                    //Ponemos como menor numero de peticiones las de esta hora
+                    menorNumeroDePeticiones = hourCounts[hora];
+                    //Guardamos esta hora como la que menos peticiones ha tenido
+                    horaConMenosPeticiones = hora;
+                }
             }
         }
-        if (horaConMenosPeticiones == 0) {
-            horaConMenosPeticiones = -1;
-            System.out.println("No hay accesos");
-        }
-        return  horaConMenosPeticiones;
+               return horaConMenosPeticiones; 
+    }
+
+    /** Analyze the hourly accesses only in the given date
+     *
+     * @param day   The given day
+     * @param month The given month
+     * @param year  The given year
+     */
+    public void analizarAccesosPorHoraDeUnDia(int day, int month, int year)
+    {
+        while(reader.hasNext()) {
+            LogEntry entry = reader.next();
+            if ((entry.getYear() == year) && 
+            (entry.getMonth() == month) && 
+            (entry.getDay() == day))
+            {
+                int hour = entry.getHour();
+                hourCounts[hour]++;
+            }
+        }      
     }
 
     /**
-     * Analyze the successfully hourly access data from the log file.
+     * Analiza el archivo de log contando los accesos por dias
      */
-    public void analyzeSuccessHourlyData()
+    public void analyzeDailyData() 
     {
-        // Iteramos sobre el log
-        while(reader.hasNext()) 
-        {
+        while(reader.hasNext()) {
             LogEntry entry = reader.next();
-            // Si en el campo success tenemos 200, sumamos uno, sino no
-            if (entry.getAccess() == 200)
-            {
-                int hour = entry.getHour();
-                hourSuccessCounts[hour]++;
-            }
+            int dia = entry.getDay(); 
+            dayCounts[dia-1]++;
+        }
+
+    }
+
+    /**
+     * Imprime los accesos que ha habido cada día
+     */
+    public void printDailyCounts ()
+    {
+        for(int index= 0; dayCounts.length > index; index++){
+            System.out.println("Dia" + (index + 1) + " : "  + dayCounts[index]);
         }
     }
+
 }
